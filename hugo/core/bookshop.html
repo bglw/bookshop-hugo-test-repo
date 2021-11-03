@@ -1,0 +1,44 @@
+{{/*
+    Renders a Bookshop component, or an array of Bookshop components.
+    Has an unusual input format so live editing can be auto-configured.
+
+    To render a single structure object, or an array of structure objects:
+    { 
+        structures: String, # A "dot.notation" key to the structures in the `source` object
+        source: map,        # The base object to look in
+    }
+
+    To render a component:
+    { 
+        component: String, # The bookshop name of a component to render
+        ... # any data to pass to the component
+    }
+
+    To render a partial:
+    { 
+        partial: String, # The bookshop name of a partial to render
+        ... # any data to pass to the include
+    }
+*/}}
+
+{{ $is_structures := (and (isset . "source") (or (isset . "structures") (isset . "structure")) ) }}
+{{ $is_component := isset . "component" }}
+{{ $is_partial := isset . "partial" }}
+
+{{ if $is_structures }}
+    {{ $input := .structures }}
+    {{ if not $input }}
+        {{ $input = .structure }}
+    {{ end }}
+    {{ partial "_bookshop/helpers/render_structures" (dict "structures" $input "source" .source) }}
+{{ else if $is_component }}
+    {{ $component_params := dict "_bookshop_name" .component }}
+    {{ $component := merge . $component_params }}
+    {{ partial "_bookshop/helpers/component" (dict "component" $component) }}
+{{ else if $is_partial }}
+    {{ $partial_params := dict "_bookshop_name" .partial }}
+    {{ $partial := merge . $partial_params }}
+    {{ partial "_bookshop/helpers/partial" (dict "partial" $partial) }}
+{{ else }}
+    {{ partial "_bookshop/errors/bad_bookshop_tag" }}
+{{ end }}
