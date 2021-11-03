@@ -1,3 +1,3 @@
-module github.com/bglw/bookshop-hugo-test-repo/hugo/v2
+module github.com/bglw/bookshop-hugo-test-repo/hugo
 
 go 1.16
